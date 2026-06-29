@@ -30,6 +30,7 @@ func main() {
 
 	// Register Routes
 	routes.RegisterAuthRoutes(e)
+	routes.RegisterParkingZoneRoutes(e)
 
 	// Protected Test Route
 	e.GET("/api/v1/profile", func(c echo.Context) error {
