@@ -8,16 +8,27 @@ import (
 )
 
 func RegisterParkingZoneRoutes(e *echo.Echo) {
+
 	parkingZoneHandler := handler.NewParkingZoneHandler()
 
+	// ==========================
+	// Public Routes
+	// ==========================
+	e.GET("/api/v1/zones", parkingZoneHandler.GetAll)
+	e.GET("/api/v1/zones/:id", parkingZoneHandler.GetByID)
+
+	// ==========================
+	// Admin Protected Routes
+	// ==========================
 	zones := e.Group("/api/v1/zones")
 
-	// Protected Routes
+	// JWT Authentication
 	zones.Use(middleware.JWTMiddleware)
 
+	// Admin Authorization
+	zones.Use(middleware.AdminMiddleware)
+
 	zones.POST("", parkingZoneHandler.Create)
-	zones.GET("", parkingZoneHandler.GetAll)
-	zones.GET("/:id", parkingZoneHandler.GetByID)
 	zones.PATCH("/:id", parkingZoneHandler.Update)
 	zones.DELETE("/:id", parkingZoneHandler.Delete)
 }
