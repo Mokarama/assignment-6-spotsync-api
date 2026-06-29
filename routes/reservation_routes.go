@@ -11,14 +11,26 @@ func RegisterReservationRoutes(e *echo.Echo) {
 
 	reservationHandler := handler.NewReservationHandler()
 
-	reservations := e.Group("/api/v1/reservations")
+	// ==================================
+	// Authenticated Driver Routes
+	// ==================================
+	driver := e.Group("/api/v1/reservations")
+	driver.Use(middleware.JWTMiddleware)
 
-	// Protected Routes
-	reservations.Use(middleware.JWTMiddleware)
+	driver.POST("", reservationHandler.Create)
+	driver.GET("/:id", reservationHandler.GetByID)
+	driver.PATCH("/:id/cancel", reservationHandler.Cancel)
 
-	reservations.POST("", reservationHandler.Create)
-	reservations.GET("", reservationHandler.GetAll)
-	reservations.GET("/:id", reservationHandler.GetByID)
-	reservations.PATCH("/:id/cancel", reservationHandler.Cancel)
-	reservations.DELETE("/:id", reservationHandler.Delete)
+	// (এই Route আমরা পরের ধাপে implement করব)
+	driver.GET("/my-reservations", reservationHandler.GetMyReservations)
+
+	// ==================================
+	// Admin Routes
+	// ==================================
+	admin := e.Group("/api/v1/reservations")
+	admin.Use(middleware.JWTMiddleware)
+	admin.Use(middleware.AdminMiddleware)
+
+	admin.GET("", reservationHandler.GetAll)
+	admin.DELETE("/:id", reservationHandler.Delete)
 }

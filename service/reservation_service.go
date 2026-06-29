@@ -1,6 +1,8 @@
 package service
 
 import (
+	"errors"
+
 	"github.com/Mokarama/assignment-6-spotsync-api/dto"
 	"github.com/Mokarama/assignment-6-spotsync-api/models"
 	"github.com/Mokarama/assignment-6-spotsync-api/repository"
@@ -39,12 +41,22 @@ func (s *ReservationService) GetByID(id uint) (*models.Reservation, error) {
 	return s.repo.GetByID(id)
 }
 
-// Cancel Reservation
-func (s *ReservationService) Cancel(id uint) error {
+// Get My Reservations
+func (s *ReservationService) GetMyReservations(userID uint) ([]models.Reservation, error) {
+	return s.repo.GetByUserID(userID)
+}
+
+// Cancel Reservation (Owner Only)
+func (s *ReservationService) Cancel(userID uint, id uint) error {
 
 	reservation, err := s.repo.GetByID(id)
 	if err != nil {
 		return err
+	}
+
+	// Ownership Check
+	if reservation.UserID != userID {
+		return errors.New("you are not allowed to cancel this reservation")
 	}
 
 	reservation.Status = "cancelled"

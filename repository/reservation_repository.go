@@ -34,6 +34,19 @@ func (r *ReservationRepository) GetByID(id uint) (*models.Reservation, error) {
 	return &reservation, err
 }
 
+// Get Reservations By User ID
+func (r *ReservationRepository) GetByUserID(userID uint) ([]models.Reservation, error) {
+	var reservations []models.Reservation
+
+	err := database.DB.
+		Preload("User").
+		Preload("Zone").
+		Where("user_id = ?", userID).
+		Find(&reservations).Error
+
+	return reservations, err
+}
+
 // Update Reservation
 func (r *ReservationRepository) Update(reservation *models.Reservation) error {
 	return database.DB.Save(reservation).Error

@@ -91,7 +91,25 @@ func (h *ReservationHandler) GetByID(c echo.Context) error {
 	return c.JSON(http.StatusOK, reservation)
 }
 
-// Cancel Reservation
+// Get My Reservations
+func (h *ReservationHandler) GetMyReservations(c echo.Context) error {
+
+	token := c.Get("user").(*jwt.Token)
+	claims := token.Claims.(jwt.MapClaims)
+
+	userID := uint(claims["user_id"].(float64))
+
+	reservations, err := h.service.GetMyReservations(userID)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]string{
+			"message": err.Error(),
+		})
+	}
+
+	return c.JSON(http.StatusOK, reservations)
+}
+
+// Cancel Reservation (Owner Only)
 func (h *ReservationHandler) Cancel(c echo.Context) error {
 
 	id, err := strconv.Atoi(c.Param("id"))
@@ -101,8 +119,14 @@ func (h *ReservationHandler) Cancel(c echo.Context) error {
 		})
 	}
 
-	if err := h.service.Cancel(uint(id)); err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{
+	// Get User ID from JWT
+	token := c.Get("user").(*jwt.Token)
+	claims := token.Claims.(jwt.MapClaims)
+
+	userID := uint(claims["user_id"].(float64))
+
+	if err := h.service.Cancel(userID, uint(id)); err != nil {
+		return c.JSON(http.StatusForbidden, map[string]string{
 			"message": err.Error(),
 		})
 	}

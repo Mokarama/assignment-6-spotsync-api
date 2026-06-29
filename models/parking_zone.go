@@ -9,4 +9,6 @@ type ParkingZone struct {
 	Type          string  `gorm:"type:varchar(30);not null"`
 	TotalCapacity int     `gorm:"not null"`
 	PricePerHour  float64 `gorm:"type:decimal(10,2);not null"`
+
+	AvailableSpots int `gorm:"-" json:"available_spots"`
 }
