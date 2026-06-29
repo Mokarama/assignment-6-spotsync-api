@@ -4,6 +4,7 @@ import (
 	"log"
 
 	"github.com/Mokarama/assignment-6-spotsync-api/config"
+	"github.com/Mokarama/assignment-6-spotsync-api/models"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -21,5 +22,17 @@ func ConnectDatabase() {
 
 	DB = db
 
-	log.Println("Database connected successfully")
+	// Auto migrate database tables
+	err = DB.AutoMigrate(
+		&models.User{},
+		&models.ParkingZone{},
+		&models.Reservation{},
+	)
+
+	if err != nil {
+		log.Fatal("Failed to migrate database:", err)
+	}
+
+	log.Println("✅ Database connected successfully")
+	log.Println("✅ Database migration completed successfully")
 }
