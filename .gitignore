@@ -1,0 +1,18 @@
+# Environment Variables
+.env
+
+# Air
+tmp/
+
+# Logs
+*.log
+
+# OS Files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+
+# Executable Files
+*.exe
