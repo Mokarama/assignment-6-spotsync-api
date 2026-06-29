@@ -3,10 +3,19 @@ package main
 import (
 	"net/http"
 
+	"github.com/Mokarama/assignment-6-spotsync-api/config"
+	"github.com/Mokarama/assignment-6-spotsync-api/database"
+
 	"github.com/labstack/echo/v4"
 )
 
 func main() {
+	// Load environment variables
+	config.LoadEnv()
+
+	// Connect to PostgreSQL database
+	database.ConnectDatabase()
+
 	// Create Echo instance
 	e := echo.New()
 
@@ -18,5 +27,5 @@ func main() {
 	})
 
 	// Start Server
-	e.Logger.Fatal(e.Start(":8080"))
+	e.Logger.Fatal(e.Start(":" + config.GetEnv("PORT")))
 }
