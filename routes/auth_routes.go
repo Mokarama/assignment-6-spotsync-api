@@ -11,5 +11,7 @@ func RegisterAuthRoutes(e *echo.Echo) {
 
 	auth := e.Group("/api/v1/auth")
 
+	// Authentication Routes
 	auth.POST("/register", authHandler.Register)
+	auth.POST("/login", authHandler.Login)
 }

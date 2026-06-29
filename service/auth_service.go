@@ -6,7 +6,7 @@ import (
 	"github.com/Mokarama/assignment-6-spotsync-api/dto"
 	"github.com/Mokarama/assignment-6-spotsync-api/models"
 	"github.com/Mokarama/assignment-6-spotsync-api/repository"
-
+	"github.com/Mokarama/assignment-6-spotsync-api/utils"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -45,4 +45,29 @@ func (s *AuthService) Register(req *dto.RegisterRequest) error {
 	}
 
 	return s.repo.CreateUser(&user)
+}
+func (s *AuthService) Login(req *dto.LoginRequest) (string, error) {
+
+	user, err := s.repo.GetUserByEmail(req.Email)
+	if err != nil {
+		return "", errors.New("invalid email or password")
+	}
+
+	// Compare password
+	err = bcrypt.CompareHashAndPassword(
+		[]byte(user.Password),
+		[]byte(req.Password),
+	)
+
+	if err != nil {
+		return "", errors.New("invalid email or password")
+	}
+
+	// Generate JWT Token
+	token, err := utils.GenerateToken(user.ID, user.Role)
+	if err != nil {
+		return "", err
+	}
+
+	return token, nil
 }

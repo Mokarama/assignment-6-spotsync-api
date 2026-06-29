@@ -51,3 +51,34 @@ func (h *AuthHandler) Register(c echo.Context) error {
 		"message": "User registered successfully",
 	})
 }
+func (h *AuthHandler) Login(c echo.Context) error {
+
+	var req dto.LoginRequest
+
+	// Parse JSON request
+	if err := c.Bind(&req); err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{
+			"message": "Invalid request body",
+		})
+	}
+
+	// Validate request
+	if err := h.validate.Struct(req); err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{
+			"message": err.Error(),
+		})
+	}
+
+	// Login user
+	token, err := h.service.Login(&req)
+	if err != nil {
+		return c.JSON(http.StatusUnauthorized, map[string]string{
+			"message": err.Error(),
+		})
+	}
+
+	return c.JSON(http.StatusOK, map[string]interface{}{
+		"message": "Login successful",
+		"token":   token,
+	})
+}
