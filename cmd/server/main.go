@@ -5,6 +5,7 @@ import (
 
 	"github.com/Mokarama/assignment-6-spotsync-api/config"
 	"github.com/Mokarama/assignment-6-spotsync-api/database"
+	"github.com/Mokarama/assignment-6-spotsync-api/middleware"
 	"github.com/Mokarama/assignment-6-spotsync-api/routes"
 
 	"github.com/labstack/echo/v4"
@@ -29,6 +30,13 @@ func main() {
 
 	// Register Routes
 	routes.RegisterAuthRoutes(e)
+
+	// Protected Test Route
+	e.GET("/api/v1/profile", func(c echo.Context) error {
+		return c.JSON(http.StatusOK, map[string]string{
+			"message": "Welcome! You are authenticated.",
+		})
+	}, middleware.JWTMiddleware)
 
 	// Start Server
 	e.Logger.Fatal(e.Start(":" + config.GetEnv("PORT")))
