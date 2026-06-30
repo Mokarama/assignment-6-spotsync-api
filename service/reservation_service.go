@@ -28,7 +28,8 @@ func (s *ReservationService) Create(userID uint, req *dto.CreateReservationReque
 		Status:       "active",
 	}
 
-	return s.repo.Create(&reservation)
+	// Transaction + Row Lock
+	return s.repo.CreateWithTransaction(&reservation)
 }
 
 // Get All Reservations
